@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pixel & Craft — Blog Tech & Design</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+
+  <!-- CSS partagé (navbar, footer, variables, badges) -->
+  <link rel="stylesheet" href="shared.css"/>
+
+  <style>
+    /* ─────────────────────────────────────────────────
+       STYLES SPÉCIFIQUES À LA PAGE D'ACCUEIL
+    ───────────────────────────────────────────────── */
+
+    /* ── HERO ── */
+    .hero {
+      padding: clamp(60px, 10vh, 120px) clamp(20px, 5%, 80px);
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Grille décorative en arrière-plan */
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 48px 48px;
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    /* Halos lumineux */
+    .hero-glow {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .hero-glow-1 {
+      width: 500px; height: 500px;
+      top: -200px; right: 10%;
+      background: radial-gradient(circle, rgba(79,142,255,0.12) 0%, transparent 70%);
+    }
+
+    .hero-glow-2 {
+      width: 400px; height: 400px;
+      bottom: -100px; left: 5%;
+      background: radial-gradient(circle, rgba(168,85,247,0.08) 0%, transparent 70%);
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 680px;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--bleu);
+      margin-bottom: 20px;
+    }
+
+    .hero-label::before {
+      content: '';
+      display: block;
+      width: 24px; height: 2px;
+      background: var(--bleu);
+    }
+
+    .hero h1 {
+      font-family: var(--font-ui);
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      font-weight: 900;
+      line-height: 1.04;
+      letter-spacing: -2px;
+      color: var(--texte);
+      margin-bottom: 20px;
+    }
+
+    /* Mot avec dégradé dans le titre */
+    .hero h1 .grad {
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-desc {
+      font-size: 1rem;
+      color: var(--texte-2);
+      line-height: 1.8;
+      max-width: 480px;
+      margin-bottom: 36px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary-pc {
+      font-family: var(--font-ui);
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #fff;
+      background: var(--gradient);
+      border: none;
+      border-radius: 8px;
+      padding: 11px 24px;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+
+    .btn-primary-pc:hover { opacity: 0.88; transform: translateY(-1px); color: #fff; }
+
+    .btn-ghost {
+      font-family: var(--font-ui);
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--texte-2);
+      background: transparent;
+      border: 1px solid var(--border-2);
+      border-radius: 8px;
+      padding: 11px 24px;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .btn-ghost:hover { border-color: var(--bleu); color: var(--bleu); }
+
+    /* Stats du blog */
+    .hero-stats {
+      display: flex;
+      gap: 32px;
+      margin-top: 48px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .stat-item { display: flex; flex-direction: column; gap: 2px; }
+
+    .stat-num {
+      font-family: var(--font-ui);
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--texte);
+      letter-spacing: -1px;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--texte-3);
+      font-weight: 500;
+    }
+
+    /* ── FILTRES DE CATÉGORIE ── */
+    .filtres-section {
+      padding: 32px clamp(20px, 5%, 80px) 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .filtre-btn {
+      font-family: var(--font-ui);
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--texte-3);
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 8px 18px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .filtre-btn:hover { color: var(--texte); background: var(--surface); }
+
+    .filtre-btn.actif {
+      color: var(--bleu);
+      background: rgba(79,142,255,0.08);
+      border-color: rgba(79,142,255,0.25);
+    }
+
+    /* ── LAYOUT PRINCIPAL ── */
+    .main-layout {
+      padding: 48px clamp(20px, 5%, 80px);
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 48px;
+      align-items: start;
+    }
+
+    /* ── SECTION ARTICLES ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .section-title {
+      font-family: var(--font-ui);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--texte-3);
+    }
+
+    .voir-tout {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--bleu);
+      transition: gap 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .voir-tout:hover { gap: 8px; }
+
+    /* Grille d'articles : 2 colonnes */
+    .articles-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    /* ── CARTE ARTICLE ── */
+    .card-pc {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-pc:hover {
+      border-color: var(--border-2);
+      transform: translateY(-3px);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+    }
+
+    /* Image de la carte */
+    .card-image {
+      width: 100%;
+      aspect-ratio: 16/9;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+    }
+
+    /* Dégradés uniques pour chaque carte */
+    .card-pc:nth-child(1) .card-image { background: linear-gradient(135deg, #0f1f3d, #1a3a6b, #2563eb22); }
+    .card-pc:nth-child(2) .card-image { background: linear-gradient(135deg, #1a0a2e, #3b1060, #7c3aed22); }
+    .card-pc:nth-child(3) .card-image { background: linear-gradient(135deg, #0a1f2e, #0e3a52, #0284c722); }
+    .card-pc:nth-child(4) .card-image { background: linear-gradient(135deg, #0a2e1a, #0d4a28, #16a34a22); }
+    .card-pc:nth-child(5) .card-image { background: linear-gradient(135deg, #2e1a0a, #4a2a0d, #b45309 22%); }
+    .card-pc:nth-child(6) .card-image { background: linear-gradient(135deg, #1a0a2e, #2e1060, #9333ea22); }
+
+    /* Grille déco sur les images */
+    .card-image::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+
+    .card-emoji {
+      position: relative;
+      z-index: 1;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+    }
+
+    .card-body-pc {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-date {
+      font-size: 0.72rem;
+      color: var(--texte-3);
+    }
+
+    .card-title {
+      font-family: var(--font-ui);
+      font-size: 0.97rem;
+      font-weight: 700;
+      color: var(--texte);
+      line-height: 1.35;
+      transition: color 0.15s;
+    }
+
+    .card-pc:hover .card-title { color: var(--bleu); }
+
+    .card-extrait {
+      font-size: 0.82rem;
+      color: var(--texte-2);
+      line-height: 1.65;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-footer-pc {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      margin-top: auto;
+    }
+
+    .card-auteur {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .avatar-sm {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      display: flex;
+      object-fit: cover;
+      overflow: hidden;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .av-1 { background: linear-gradient(135deg, var(--bleu), var(--violet)); }
+    .av-2 { background: linear-gradient(135deg, var(--violet), var(--cyan)); }
+    .av-3 { background: linear-gradient(135deg, var(--cyan), var(--vert)); }
+    .av-4 { background: linear-gradient(135deg, var(--vert), var(--bleu)); }
+    .av-5 { background: linear-gradient(135deg, #f59e0b, var(--rouge)); }
+    .av-6 { background: linear-gradient(135deg, var(--rouge), var(--violet)); }
+
+    .auteur-nom {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--texte-2);
+    }
+
+    .lecture-time {
+      font-size: 0.72rem;
+      color: var(--texte-3);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Lien "Lire" sur les cartes */
+    .card-lire {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--bleu);
+      margin-top: 4px;
+      transition: gap 0.2s;
+    }
+
+    .card-lire:hover { gap: 8px; }
+
+    /* ── SIDEBAR ── */
+    .sidebar-pc {
+      position: sticky;
+      top: calc(var(--navbar-h) + 24px);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .sidebar-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+    }
+
+    .sidebar-block h5 {
+      font-family: var(--font-ui);
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--texte-3);
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Catégories */
+    .cat-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .cat-list li a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--texte-2);
+      padding: 8px 10px;
+      border-radius: 8px;
+      transition: all 0.15s;
+    }
+
+    .cat-list li a:hover { background: var(--surface-2); color: var(--bleu); }
+
+    .cat-count {
+      font-size: 0.7rem;
+      color: var(--texte-3);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 1px 7px;
+    }
+
+    /* Articles populaires */
+    .pop-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .pop-item {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      cursor: pointer;
+    }
+
+    .pop-num {
+      font-family: var(--font-ui);
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: var(--border-2);
+      line-height: 1;
+      flex-shrink: 0;
+      width: 24px;
+    }
+
+    .pop-title {
+      font-size: 0.83rem;
+      font-weight: 600;
+      color: var(--texte-2);
+      line-height: 1.4;
+      transition: color 0.15s;
+    }
+
+    .pop-item:hover .pop-title { color: var(--bleu); }
+
+    .pop-meta {
+      font-size: 0.7rem;
+      color: var(--texte-3);
+      margin-top: 3px;
+    }
+
+    /* Newsletter */
+    .newsletter-block {
+      background: linear-gradient(135deg, rgba(79,142,255,0.08), rgba(168,85,247,0.06));
+      border: 1px solid rgba(79,142,255,0.2);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+    }
+
+    .newsletter-block h5 {
+      font-family: var(--font-ui);
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--texte);
+      margin-bottom: 6px;
+      letter-spacing: 0;
+      text-transform: none;
+      border: none;
+      padding: 0;
+    }
+
+    .newsletter-block p {
+      font-size: 0.8rem;
+      color: var(--texte-3);
+      line-height: 1.6;
+      margin-bottom: 14px;
+    }
+
+    .newsletter-block input {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border-2);
+      border-radius: 8px;
+      padding: 9px 14px;
+      color: var(--texte);
+      font-family: var(--font-ui);
+      font-size: 0.82rem;
+      outline: none;
+      margin-bottom: 8px;
+      transition: border-color 0.2s;
+    }
+
+    .newsletter-block input:focus { border-color: var(--bleu); }
+    .newsletter-block input::placeholder { color: var(--texte-3); }
+
+    .newsletter-block button {
+      width: 100%;
+      background: var(--gradient);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px;
+      font-family: var(--font-ui);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .newsletter-block button:hover { opacity: 0.88; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+      .main-layout { grid-template-columns: 1fr; }
+      .sidebar-pc { position: static; }
+    }
+
+    @media (max-width: 640px) {
+      .articles-grid { grid-template-columns: 1fr; }
+      .hero h1 { letter-spacing: -1px; }
+      .hero-stats { gap: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════
+       NAVBAR
+  ══════════════════════════════════════ -->
+  <nav class="navbar-pc">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">P&</div>
+      <span class="logo-text">Pixel<span>&</span>Craft</span>
+    </a>
+
+    <ul class="nav-menu" id="navMenu">
+      <li><a href="index.html" class="active">Accueil</a></li>
+      <li><a href="#" onclick="filtrer('dev', event)">Dev</a></li>
+      <li><a href="#" onclick="filtrer('design', event)">Design</a></li>
+      <li><a href="#" onclick="filtrer('ux', event)">UX</a></li>
+      <li><a href="#" onclick="filtrer('ia', event)">IA</a></li>
+      <li><a href="#" onclick="filtrer('outils', event)">Outils</a></li>
+    </ul>
+
+    <button class="nav-cta">Newsletter</button>
+
+    <button class="hamburger" id="hamburger" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- ══════════════════════════════════════
+       HERO
+  ══════════════════════════════════════ -->
+  <section class="hero">
+    <div class="hero-glow hero-glow-1"></div>
+    <div class="hero-glow hero-glow-2"></div>
+
+    <div class="hero-inner">
+      <div class="hero-label">Blog Tech & Design</div>
+
+      <h1>Ce qui se<br/>passe dans<br/>le <span class="grad">code</span>.</h1>
+
+      <p class="hero-desc">
+        Tutoriels, analyses et retours d'expérience sur le développement frontend, le design système et les outils qui changent vraiment le workflow.
+      </p>
+
+      <div class="hero-actions">
+        <a href="#articles" class="btn-primary-pc">Lire les articles</a>
+        <button class="btn-ghost" onclick="filtrer('dev', event)">Explorer le Dev →</button>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-num">48</div>
+          <div class="stat-label">Articles publiés</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">5</div>
+          <div class="stat-label">Catégories</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">12k</div>
+          <div class="stat-label">Lecteurs / mois</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════
+       FILTRES
+  ══════════════════════════════════════ -->
+  <div class="filtres-section" id="filtres">
+    <button class="filtre-btn actif" onclick="filtrer('tout', event)">Tout</button>
+    <button class="filtre-btn" onclick="filtrer('dev', event)">Dev</button>
+    <button class="filtre-btn" onclick="filtrer('design', event)">Design</button>
+    <button class="filtre-btn" onclick="filtrer('ux', event)">UX</button>
+    <button class="filtre-btn" onclick="filtrer('ia', event)">IA</button>
+    <button class="filtre-btn" onclick="filtrer('outils', event)">Outils</button>
+  </div>
+  <!-- ARTICLE À LA UNE -->
+<div class="article-une">
+  <div class="une-image">
+    <span><img src="images/designsy.avif" alt=""></span>
+  </div>
+  <div class="une-content">
+    <div class="une-top">
+      <span class="badge-pc badge-dev">À la une</span>
+      <span class="une-date">2 mai 2026 · 5 min de lecture</span>
+    </div>
+    <h2 class="une-titre">Design Systems en 2026 : la fin des composants isolés</h2>
+    <p class="une-desc">Comment les équipes produit abandonnent les bibliothèques figées pour des systèmes vivants, pilotés par les tokens et l'IA.</p>
+    <div class="une-footer">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <div class="avatar-sm av-1"><img src="images/jules2.avif" alt=""></div>
+        <span class="auteur-nom">Jean S.</span>
+      </div>
+      <a href="#" class="btn-primary-pc">Lire l'article →</a>
+    </div>
+  </div>
+</div>
+
+  <!-- ══════════════════════════════════════
+       LAYOUT PRINCIPAL
+  ══════════════════════════════════════ -->
+  <div class="main-layout" id="articles">
+
+    <!-- ARTICLES -->
+    <div>
+      <div class="section-header">
+        <span class="section-title">Derniers articles</span>
+        <a href="#" class="voir-tout">Voir tout <span>→</span></a>
+      </div>
+
+      <div class="articles-grid" id="articlesGrid">
+
+        <!-- CARTE 1 -->
+        <div class="card-pc" data-categorie="dev">
+          <div class="card-image">
+            <span class="card-emoji"><img src="images/cssgrid1.png" alt=""></span>
+          </div>
+          <div class="card-body-pc">
+            <div class="card-meta">
+              <span class="badge-pc badge-dev">Dev</span>
+              <span class="card-date">2 mai 2026</span>
+            </div>
+            <div class="card-title">CSS Grid vs Flexbox : quand utiliser lequel ?</div>
+            <div class="card-extrait">Une comparaison honnête des deux outils les plus puissants du CSS moderne, avec des cas d'usage concrets.</div>
+            <div class="card-footer-pc">
+              <div class="card-auteur">
+                <div class="avatar-sm av-1"><img src="images/katrine2.avif" alt=""></div>
+                <span class="auteur-nom">Karine L.</span>
+              </div>
+              <span class="lecture-time">⏱ 5 min</span>
+            </div>
+            <a href="article-template.html" class="card-lire">Lire l'article →</a>
+          </div>
+        </div>
+
+        <!-- CARTE 2 -->
+        <div class="card-pc" data-categorie="ux">
+          <div class="card-image">
+            <span class="card-emoji"><img src="images/microinteraction.png" alt=""></span>
+          </div>
+          <div class="card-body-pc">
+            <div class="card-meta">
+              <span class="badge-pc badge-ux">UX</span>
+              <span class="card-date">28 avr. 2026</span>
+            </div>
+            <div class="card-title">Micro-interactions : les détails qui font la différence</div>
+            <div class="card-extrait">Les animations subtiles transforment une interface froide en expérience mémorable. Principes et exemples.</div>
+            <div class="card-footer-pc">
+              <div class="card-auteur">
+                <div class="avatar-sm av-2"><img src="images/amir.avif" alt=""></div>
+                <span class="auteur-nom">Amir M.</span>
+              </div>
+              <span class="lecture-time">⏱ 6 min</span>
+            </div>
+            <a href="article1.html" class="card-lire">Lire l'article →</a>
+          </div>
+        </div>
+
+        <!-- CARTE 3 -->
+        <div class="card-pc" data-categorie="ia">
+          <div class="card-image">
+            <span class="card-emoji"><img src="images/cursor.jpg" alt=""></span>
+          </div>
+          <div class="card-body-pc">
+            <div class="card-meta">
+              <span class="badge-pc badge-ia">IA</span>
+              <span class="card-date">24 avr. 2026</span>
+            </div>
+            <div class="card-title">Cursor, Copilot, Claude : le vrai bilan après 6 mois</div>
+            <div class="card-extrait">J'ai utilisé les trois au quotidien pendant six mois. Voici ce qui change vraiment dans mon workflow.</div>
+            <div class="card-footer-pc">
+              <div class="card-auteur">
+                <div class="avatar-sm av-3"><img src="images/sarab.jpg" alt=""></div>
+                <span class="auteur-nom">Sara B.</span>
+              </div>
+              <span class="lecture-time">⏱ 10 min</span>
+            </div>
+            <a href="article2.html" class="card-lire">Lire l'article →</a>
+          </div>
+        </div>
+
+        <!-- CARTE 4 -->
+        <div class="card-pc" data-categorie="outils">
+          <div class="card-image">
+            <span class="card-emoji"><img src="images/figma8.png" alt=""></span>
+          </div>
+          <div class="card-body-pc">
+            <div class="card-meta">
+              <span class="badge-pc badge-outils">Outils</span>
+              <span class="card-date">20 avr. 2026</span>
+            </div>
+            <div class="card-title">Figma en 2026 : les 8 fonctionnalités que personne n'utilise</div>
+            <div class="card-extrait">Variables, prototypes avancés, grilles auto-layout... Tour d'horizon des fonctions cachées.</div>
+            <div class="card-footer-pc">
+              <div class="card-auteur">
+                <div class="avatar-sm av-4"><img src="images/jules.avif" alt=""></div>
+                <span class="auteur-nom">Jules D.</span>
+              </div>
+              <span class="lecture-time">⏱ 7 min</span>
+            </div>
+            <a href="index-v2.html" class="card-lire">Lire l'article →</a>
+          </div>
+        </div>
+
+        <!-- CARTE 5 -->
+        <div class="card-pc" data-categorie="design">
+          <div class="card-image">
+            <span class="card-emoji"><img src="images/variablefonts.gif" alt=""></span>
+          </div>
+          <div class="card-body-pc">
+            <div class="card-meta">
+              <span class="badge-pc badge-design">Design</span>
+              <span class="card-date">15 avr. 2026</span>
+            </div>
+            <div class="card-title">Typographie variable : l'avenir de la lisibilité web</div>
+            <div class="card-extrait">Les polices variables permettent un contrôle total sur le poids, la largeur et l'italique avec un seul fichier.</div>
+            <div class="card-footer-pc">
+              <div class="card-auteur">
+                <div class="avatar-sm av-5"><img src="images/nadia.jpg" alt=""></div>
+                <span class="auteur-nom">Nadia K.</span>
+              </div>
+              <span class="lecture-time">⏱ 9 min</span>
+            </div>
+            <a href="index-v2.html" class="card-lire">Lire l'article →</a>
+          </div>
+        </div>
+
+        <!-- CARTE 6 -->
+        <div class="card-pc" data-categorie="dev">
+          <div class="card-image">
+            <span class="card-emoji"><img src="images/webcomponents.jpg" alt=""></span>
+          </div>
+          <div class="card-body-pc">
+            <div class="card-meta">
+              <span class="badge-pc badge-dev">Dev</span>
+              <span class="card-date">10 avr. 2026</span>
+            </div>
+            <div class="card-title">Web Components natifs : enfin matures en 2026 ?</div>
+            <div class="card-extrait">Sans framework, sans dépendances. Les Web Components peuvent-ils rivaliser avec React et Vue ?</div>
+            <div class="card-footer-pc">
+              <div class="card-auteur">
+                <div class="avatar-sm av-6"><img src="images/hispanic.jpg" alt=""></div>
+                <span class="auteur-nom">Tom P.</span>
+              </div>
+              <span class="lecture-time">⏱ 11 min</span>
+            </div>
+            <a href="index-v2.html" class="card-lire">Lire l'article →</a>
+          </div>
+        </div>
+
+      </div>
+      <!-- fin articles-grid -->
+
+      <!-- Message quand aucun résultat -->
+      <div id="noResults" style="display:none; text-align:center; padding: 48px 0; color: var(--texte-3);">
+        <div style="font-size:2rem; margin-bottom:12px;">🔍</div>
+        <div style="font-size:0.9rem;">Aucun article dans cette catégorie pour l'instant.</div>
+      </div>
+
+    </div>
+    <!-- fin articles -->
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar-pc">
+
+      <div class="sidebar-block">
+        <h5>Catégories</h5>
+        <ul class="cat-list">
+          <li><a href="#" onclick="filtrer('dev', event)">💻 Dev <span class="cat-count">18</span></a></li>
+          <li><a href="#" onclick="filtrer('design', event)">🎨 Design <span class="cat-count">12</span></a></li>
+          <li><a href="#" onclick="filtrer('ux', event)">✦ UX <span class="cat-count">9</span></a></li>
+          <li><a href="#" onclick="filtrer('ia', event)">🤖 IA <span class="cat-count">7</span></a></li>
+          <li><a href="#" onclick="filtrer('outils', event)">⚡ Outils <span class="cat-count">6</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-block">
+        <h5>Les plus lus</h5>
+        <ul class="pop-list">
+          <li class="pop-item">
+            <div class="pop-num">01</div>
+            <div>
+              <div class="pop-title">Islande en van : le road trip ultime</div>
+              <div class="pop-meta">15 200 lectures · Dev</div>
+            </div>
+          </li>
+          <li class="pop-item">
+            <div class="pop-num">02</div>
+            <div>
+              <div class="pop-title">CSS Grid : le guide complet 2026</div>
+              <div class="pop-meta">12 800 lectures · Dev</div>
+            </div>
+          </li>
+          <li class="pop-item">
+            <div class="pop-num">03</div>
+            <div>
+              <div class="pop-title">Figma Variables — tutoriel complet</div>
+              <div class="pop-meta">9 400 lectures · Outils</div>
+            </div>
+          </li>
+          <li class="pop-item">
+            <div class="pop-num">04</div>
+            <div>
+              <div class="pop-title">React vs Vue en 2026 : verdict</div>
+              <div class="pop-meta">7 100 lectures · Dev</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="newsletter-block">
+        <h5>Newsletter hebdo</h5>
+        <p>Les meilleurs articles de la semaine. Zéro spam, désinscription en un clic.</p>
+        <input type="email" placeholder="ton@email.com"/>
+        <button>S'abonner →</button>
+      </div>
+
+    </aside>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       FOOTER
+  ══════════════════════════════════════ -->
+  <footer class="footer-pc">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand-name">
+          <div class="logo-icon">P&</div>
+          <span style="font-size:1rem; font-weight:800; color:var(--texte)">Pixel<span style="color:var(--bleu)">&</span>Craft</span>
+        </div>
+        <p class="footer-desc">Le blog des designers et développeurs qui veulent aller plus loin. Tutoriels, analyses et inspirations chaque semaine.</p>
+      </div>
+      <div class="footer-col">
+        <h6>Explorer</h6>
+        <ul class="footer-links">
+          <li><a href="#">Tous les articles</a></li>
+          <li><a href="#">Dev</a></li>
+          <li><a href="#">Design</a></li>
+          <li><a href="#">IA</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h6>Le blog</h6>
+        <ul class="footer-links">
+          <li><a href="#">À propos</a></li>
+          <li><a href="#">Newsletter</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h6>Légal</h6>
+        <ul class="footer-links">
+          <li><a href="#">Mentions légales</a></li>
+          <li><a href="#">Confidentialité</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Pixel & Craft</span>
+      <span>Fait avec ☕ et beaucoup de CSS</span>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // ── Hamburger ──
+    function toggleMenu() {
+      document.getElementById('navMenu').classList.toggle('ouvert');
+      document.getElementById('hamburger').classList.toggle('ouvert');
+    }
+
+    // ── Filtrage des articles ──
+    function filtrer(categorie, e) {
+      if (e) e.preventDefault();
+
+      // Met à jour les boutons de filtre
+      document.querySelectorAll('.filtre-btn').forEach(btn => btn.classList.remove('actif'));
+      const btnActif = [...document.querySelectorAll('.filtre-btn')]
+        .find(b => b.textContent.toLowerCase().trim() === (categorie === 'tout' ? 'tout' : categorie));
+      if (btnActif) btnActif.classList.add('actif');
+
+      // Montre / cache les cartes
+      const cartes = document.querySelectorAll('[data-categorie]');
+      let visibles = 0;
+
+      cartes.forEach(carte => {
+        const show = categorie === 'tout' || carte.dataset.categorie === categorie;
+        // Animation douce
+        if (show) {
+          carte.style.display = 'flex';
+          carte.style.animation = 'fadeUp 0.3s ease both';
+          visibles++;
+        } else {
+          carte.style.display = 'none';
+        }
+      });
+
+      // Message si aucun résultat
+      document.getElementById('noResults').style.display = visibles === 0 ? 'block' : 'none';
+
+      // Scroll vers les articles
+      document.getElementById('articles').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  </script>
+
+</body>
+</html>
